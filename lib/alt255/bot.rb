@@ -5,6 +5,8 @@ require 'alt255/calcdb'
 
 require 'thread'
 
+BOTCMDS_PATH = File.dirname(__FILE__)
+
 # Don't allow use of "tainted" data by potentially dangerous operations
 # We'd go up to safe level 2, but then the user database doesn't work, since
 # level 2 disallows flock()
@@ -332,7 +334,7 @@ private
         end
     end
 
-    load './botcmds.rb'
+    load File.join(BOTCMDS_PATH, './botcmds.rb')
 
 end
 
