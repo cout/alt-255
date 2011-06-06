@@ -1,4 +1,4 @@
-require 'rsa/rsa'
+require 'alt255/rsa'
 
 require 'pstore'
 
