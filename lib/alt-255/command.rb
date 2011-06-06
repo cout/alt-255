@@ -5,6 +5,14 @@ class Command
 
   @commands = [ ]
 
+  def public?
+    return self.class::PUBLIC
+  end
+
+  def loggable?
+    return self.class::LOGGABLE
+  end
+
   class << self
     attr_reader :commands
 

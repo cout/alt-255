@@ -4,6 +4,10 @@ class CalcCommand < Command
   PUBLIC = true
   LOGGABLE = true
 
+  def initialize(bot)
+    @calcdb = bot.calcdb
+  end
+
   def do(command)
     calc = nil
 

@@ -18,6 +18,7 @@ $SAFE=1
 # processed.  We also keep track of a user database and a bot database (for
 # authentication purposes), and support the EVAL and RPNEVAL commands.
 class IRC_Bot < IRC
+  attr_reader :calcdb
   attr_reader :botdb
   attr_reader :userdb
 
@@ -233,7 +234,7 @@ class IRC_Bot < IRC
     if cmd then
       # If this is a private-only command, then make sure it was sent to
       # us directly and not to a channel.
-      return if cmd::PUBLIC and not public_message
+      return if cmd.public? and not public_message
 
       args = CommandArgs.new(self, message, reply_to, command_args)
       cmd.do(args)
@@ -256,7 +257,7 @@ class IRC_Bot < IRC
   # Log a command; if the command does not have the LOGGABLE_COMMAND
   # flag set, then only log the command itself, and not the arguments.
   def log_command(cmd, str, user, to)
-    if cmd.flags & LOGGABLE_COMMAND != 0 then
+    if cmd.loggable? then
       log "[ `#{str}' from " +
       "#{user.nick}!#{user.user}@#{user.host} to #{to} ]"
     else
