@@ -21,6 +21,7 @@ class IRC_Bot < IRC
   attr_reader :calcdb
   attr_reader :botdb
   attr_reader :userdb
+  attr_reader :commands
 
   # -----------------------------------------------------------------------
   # Initialization
@@ -272,21 +273,6 @@ class IRC_Bot < IRC
   def log(message)
     timestamp = @timestamp ? "#{Time.now.strftime('%H%M%S')} " : ""
     puts "#{timestamp}#{message}"
-  end
-
-  # Send help for a command
-  def send_help(destination, command=nil)
-    log "Sending help to #{destination}"
-    if command then
-      cmd = @commands[command.upcase]
-      if cmd then
-        privmsg(destination, "Usage: #{cmd.help}")
-      else
-        privmsg(destination, "No such command")
-      end
-    else
-      privmsg(destination, @help.keys)
-    end
   end
 end
 
