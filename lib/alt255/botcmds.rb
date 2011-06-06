@@ -1,6 +1,7 @@
+require 'alt255/whatis'
+require 'alt255/proto'
+
 require 'open3'
-require 'whatis'
-require 'proto'
 
     def init_commands()
         commands = [

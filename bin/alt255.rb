@@ -1,5 +1,5 @@
-require './bot.rb'
-load './config.rb'
+require 'alt255/bot'
+require 'etc/config'
 
 CONFIG.untaint
 CONFIG.constants.each do |x|

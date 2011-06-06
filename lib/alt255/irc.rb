@@ -1,5 +1,6 @@
+require 'alt255/rfc2812.rb'
+
 require 'socket'
-require './rfc2812.rb'
 
 # The irc class, which talks to the server and holds the main event loop.
 # Through this class, a client can register for events and respond to them.
