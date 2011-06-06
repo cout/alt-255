@@ -1,4 +1,6 @@
 require 'alt-255/rfc2812'
+require 'alt-255/message'
+require 'alt-255/source'
 
 require 'socket'
 
@@ -13,9 +15,13 @@ public
     def initialize(server, port, ping_interval = 300, ping_timeout = 600)
         @server = server
         @port = port
+
         @callbacks = Hash.new
         @ctcp_callbacks = Hash.new
-        @unknown_callback = nil
+
+        @callbacks['PING'] = [ ]
+        @callbacks['PONG'] = [ ]
+
         @ping_interval = ping_interval
         @ping_timeout = ping_timeout
 
@@ -25,11 +31,6 @@ public
 
     attr_reader :server, :port
 
-    # NOTE: All callbacks should return either true or false, depending on
-    # whether the message was processed.  This way, event handlers can be
-    # chained together, and a message can be printed to the screen if the
-    # event was not handled.
-    #
     # Callback type          Arguments
     # -------------          ---------
     # server message         source:String, msg:String, args:Array
@@ -45,43 +46,32 @@ public
         key = msg.kind_of?(Numeric) \
           ? ("%03d" % msg)          \
           : msg.to_s.upcase
-        old_callback = @callbacks[key]
-        @callbacks[key] = callback
-        return old_callback
+        @callbacks[key] ||= [ ]
+        @callbacks[key] << callback
     end
 
     # Set the default callback for unhandled messages (server messages for
     # which there is no registered callback).
     def register_default(callback)
-        old_callback = @callbacks.default
-        @callbacks.default = callback
-        return old_callback
+      @callbacks.default ||= [ ]
+      @callbacks.default << callback
     end
 
     # Register for a server message.  The msg argument can be either a
     # string (for string server messages) or a number (for numeric
     # server messages).
     def register_ctcp(msg, callback)
-        old_callback = @ctcp_callbacks[msg.to_s.upcase]
-        @ctcp_callbacks[msg.to_s.upcase] = callback
-        return old_callback
+      @ctcp_callbacks[msg.to_s.upcase] ||= [ ]
+      @ctcp_callbacks[msg.to_s.upcase] << callback
     end
 
     # Set the default callback for unhandled messages (server messages for
     # which there is no registered callback).
     def register_default_ctcp(callback)
-        old_callback = @ctcp_callbacks.default
-        @ctcp_callbacks.default = callback
-        return old_callback
+      @ctcp_callbacks.default ||= [ ]
+      @ctcp_callbacks.default << callback
     end
 
-    # Set the callback for messages that don't match a known pattern.
-    def register_unknown(callback)
-        old_callback = @unknown_callback
-        @unknown_callback = callback
-        return old_callback
-    end
-    
     # Connect to the IRC server
     def connect()
         @irc = TCPSocket.open(@server, @port)
@@ -221,44 +211,36 @@ protected
     # TODO: If an exception is thrown here, the msg might not get logged
     # (but we want to make sure we don't log it twice, either).
     def handle_server_input(s)
-        match = false
-
         s.chomp!("\n")
         s.chomp!("\r")
 
         case s
             when /^PING :(.+)$/i
                 # Respond to a server ping
-                if (cb = @callbacks['PING']) then
-                    cb.call($1, 'PING', [])
-                end
-                match = true
+                message = Message.new($1, nil, 'PING', [ ])
+                @callbacks['PING'].each { |cb| cb.call(message) }
 
             when /:(.+?) PONG (.+?) :(.+)/
-                match = true
+                message = Message.new($1, nil, 'PONG', [ ])
+                @callbacks['PONG'].each { |cb| cb.call(message) }
 
             when /^:(.+?)\s+PRIVMSG\s+(.+?)\s+:?[\001](.+?)(\s+.+)?[\001]$/i
                 # CTCP message
-                source = $1
+                source = Source.new($1)
                 dest = $2
                 msg = $3.upcase
                 arg = $4 ? nil : $4.strip
-                if (cb = @ctcp_callbacks[msg]) then
-                    match = cb.call(source, dest, msg, arg)
-                end
+                message = Message.new(source, dest, msg, [ arg ])
+                @ctcp_callbacks[msg].each { |cb| cb.call(message) }
 
             when /^:(.+?)\s+(.+?)\s+(.*)/
                 # Server message
-                source = $1
+                source = Source.new($1)
                 msg = $2.upcase
                 args = parse_args($3)
-                if (cb = @callbacks[msg]) then
-                    match = cb.call(source, msg, args)
-                end
-        end
-
-        if !match and @unknown_callback then
-            @unknown_callback.call(s)
+                dest = args.shift
+                message = Message.new(source, dest, msg, args)
+                @callbacks[msg].each { |cb| cb.call(message) }
         end
     end
 
@@ -269,24 +251,14 @@ protected
 
     # Handle a CTCP PING
     def ctcp_ping_event(source, dest, msg, arg)
-        nick, user, host = parse_source(source)
-        reply_ping(nick, arg) unless !nick
+      source = Source.new(source)
+      reply_ping(nick, arg) unless !source.nick
     end
 
     # Handle a CTCP VERSION
     def ctcp_version_event(source, dest, msg, arg)
-        nick, user, host = parse_source(source)
-        reply_version(nick, @version_string) unless !nick
-    end
-
-    # Parse a source string and return nick, user, host.  Returns a nil
-    # nick and user if the source string specifies a server.
-    def parse_source(source)
-        if /(.+?)!(.+?)@(.+)/ =~ source then
-            return $1, $2, $3
-        else
-            return nil, nil, source
-        end
+      source = Source.new(source)
+      reply_version(nick, @version_string) unless !source.nick
     end
 
     # Parse a string of arguments of the form "arg1 arg2 :argument 3" and

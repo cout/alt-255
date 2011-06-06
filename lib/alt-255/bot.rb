@@ -31,11 +31,6 @@ public
         :cb,
         :num_args)
 
-    User = Struct.new("User",
-        :nick,
-        :user,
-        :host)
-
     PUBLIC_COMMAND   = 1
     PRIVATE_COMMAND  = 2
     LOGGABLE_COMMAND = 4
@@ -78,7 +73,6 @@ public
         register ERR_NONICKNAMEGIVEN, method(:badnick_event)
         register ERR_ERRONEUSNICKNAME, method(:badnick_event)
         register ERR_NICKNAMEINUSE, method(:badnick_event)
-        register_unknown method(:unknown_message_event)
         register 'PRIVMSG', method(:privmsg_event)
         register 'PING', method(:ping_event)
         register_ctcp 'PING', method(:ctcp_ping_event)
@@ -178,15 +172,15 @@ public
     # only get the command logged, not the arguments, so specify non-
     # loggable for commands where passwords are sent).  A method should
     # expect the following parameters: 
-    #   user - the User the command came from
-    #   dest - the destination for the response (the channel name if the
-    #          message was sent to a channel, or the user's nick if the
-    #          message was sent directly to our nick
-    #   cmd  - the full string of the command
-    #   args - any number of arguments, as specified by num_args.  Special
-    #          value for num_args are -1 (send the arguments as one long
-    #          string), and -2 (split the arguments by whitespace and
-    #          pass the arguments as an array)
+    #   source - the Source the command came from
+    #   dest   - the destination for the response (the channel name if the
+    #            message was sent to a channel, or the user's nick if the
+    #            message was sent directly to our nick
+    #   cmd    - the full string of the command
+    #   args   - any number of arguments, as specified by num_args.  Special
+    #            value for num_args are -1 (send the arguments as one long
+    #            string), and -2 (split the arguments by whitespace and
+    #            pass the arguments as an array)
     def add_command(name, help, flags, method, num_args)
         command = Command.new(name.upcase, help, flags, method, num_args)
         @commands[name.upcase] = command
@@ -237,36 +231,37 @@ protected
         return true
     end
 
-    def privmsg_event(source, msg, args)
-        nick, user, host = parse_source(source)
-        return false if !nick
-        user = User.new(nick, user, host)
+    def privmsg_event(message)
+        return false if !message.source.nick
 
-        to = args[0]
-        upnick = @nicks[@current_nick].upcase
-        upto = to.upcase
-        destination = to.upcase == upnick ? nick : upto
+        if @nicks[@current_nick].upcase == message.dest.upcase then
+          dest = message.source.nick
+          private_message = true
+        else
+          dest = message.dest
+          private_message = false
+        end
 
-        command, command_args = args[1].split(/\s+/, 2)
+        command, command_args = message.args[1].split(/\s+/, 2)
         cmd = @commands[command.upcase]
 
         if cmd then
             # If this is a private-only command, then make sure it was sent
             # to us directly, and not to a channel.
-            if cmd.flags & PRIVATE_COMMAND != 0 && upto != upnick
+            if cmd.flags & PRIVATE_COMMAND != 0 && private_message then
                 return false
             end
 
             if cmd.num_args == -1 then
                 # If the number of args is -1, then pass it as a string
-                log_command(cmd, args[1], user, to)
-                cmd.cb.call(user, destination, command, command_args)
+                log_command(cmd, args[1], message.source, to)
+                cmd.cb.call(message.source, dest, command, command_args)
                 return true
             elsif cmd.num_args == -2
                 # If the number of args is -2, then pass it as an array
                 arr = command_args ? command_args.split(/\s+/) : []
                 log_command(cmd, args[1], user, to)
-                cmd.cb.call(user, destination, command, *arr)
+                cmd.cb.call(message.source, dest, command, *arr)
                 return true
             else
                 # Otherwise, pass the argument as a list of strings
@@ -274,10 +269,10 @@ protected
                 if arr.size != cmd.num_args then
                     # If the user passed the wrong number of arguments, then
                     # offer help
-                    send_help(destination, command)
+                    send_help(dest, command)
                 else
                     log_command(cmd, args[1], user, to)
-                    cmd.cb.call(user, destination, command, *arr)
+                    cmd.cb.call(message.source, dest, command, *arr)
                     return true
                 end
             end
@@ -286,9 +281,9 @@ protected
         return false
     end
 
-    def unknown_message_event(s)
-        log_message s
-        return true
+    def handle_server_input(s)
+      log_message s
+      super(s)
     end
 
     def inspect

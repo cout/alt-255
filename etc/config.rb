@@ -3,7 +3,7 @@ class CONFIG
     # SERVER          = 'irc.homelien.no'
     # SERVER          = 'irc.daxnet.no'
     # SERVER          = 'irc.efnet.org'
-    SERVER          = 'irc.efnet.nil'
+    SERVER          = 'irc.efnet.nl'
     PORT            = 6667
     NICKS           = [ 'Alt-255', 'Alt-255_' ]
     USER            = 'Alt-255'
