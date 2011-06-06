@@ -1,4 +1,4 @@
-require 'alt255/rfc2812'
+require 'alt-255/rfc2812'
 
 require 'socket'
 

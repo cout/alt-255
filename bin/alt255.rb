@@ -1,4 +1,4 @@
-require 'alt255/bot'
+require 'alt-255/bot'
 require 'etc/config'
 
 CONFIG.untaint

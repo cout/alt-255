@@ -1,5 +1,5 @@
-require 'alt255/whatis'
-require 'alt255/proto'
+require 'alt-255/whatis'
+require 'alt-255/proto'
 
 require 'open3'
 

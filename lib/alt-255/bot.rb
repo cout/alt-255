@@ -1,7 +1,7 @@
-require 'alt255/irc'
-require 'alt255/userdb'
-require 'alt255/botdb'
-require 'alt255/calcdb'
+require 'alt-255/irc'
+require 'alt-255/userdb'
+require 'alt-255/botdb'
+require 'alt-255/calcdb'
 
 require 'thread'
 
