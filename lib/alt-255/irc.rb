@@ -137,9 +137,9 @@ public
 
     def shutdown
         puts "shutting down"
-        @stdin_thread.kill if @stdin_thread.alive?
-        @sock_thread.kill if @stdin_thread.alive?
-        @ping_thread.kill if @ping_thread.alive?
+        @stdin_thread.kill if @stdin_thread and @stdin_thread.alive?
+        @sock_thread.kill if @sock_thread and @sock_thread.alive?
+        @ping_thread.kill if @ping_thread and @ping_thread.alive?
     end
 
     # Change the current nick
