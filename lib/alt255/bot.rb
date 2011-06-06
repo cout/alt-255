@@ -57,9 +57,9 @@ public
         @timestamp = config::TIMESTAMP
 
         # Initialize our databases
-        @userdb = UserDB.new('users.db')
-        @botdb = BotDB.new('bot.db')
-        @calcdb = CalcDB.new('calcdb.data')
+        @userdb = UserDB.new(config::USER_DB)
+        @botdb = BotDB.new(config::BOT_DB)
+        @calcdb = CalcDB.new(config::CALC_DB)
 
         # And save the list of bots to authenticate to and our private key (so
         # we can get opped automatically)
