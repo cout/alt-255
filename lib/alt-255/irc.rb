@@ -59,10 +59,8 @@ public
     # string (for string server messages) or a number (for numeric
     # server messages).
     def register_ctcp(msg, callback)
-      p @ctcp_callbacks
       @ctcp_callbacks[msg.to_s.upcase] ||= [ ]
       @ctcp_callbacks[msg.to_s.upcase] << callback
-      p @ctcp_callbacks
     end
 
     # Set the default callback for unhandled messages (server messages for
