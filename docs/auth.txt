@@ -1,0 +1,29 @@
+Here's how the RSA authentication works in this bot.
+
+1) Send CHALLENGE <foo> to the bot.  <foo> can be any string; it's just an
+   identifier that gets returned with YOURCHALLENGE.
+   
+2) The bot will responsd with YOURCHALLENGE <foo> <challenge, where <challenge>
+   is a random 20-character string.
+
+3) Respond to the challnege with CH_OP <response>.  To create the response:
+     a) Encrypt the challenge with your private key
+     b) Encode the resulting message with base64 encoding and strip out
+        any carriage returns.
+
+4) The bot will authenticate you as follows:
+     a) The message witll be decoded using base64
+     b) The resulting string will be decrypted with your public key
+     c) The decrypted message will be compared with the challenge that was
+        sent to you in step 2.
+
+Note that whenever a challenge is sent that is invalid, it is removed, and
+a new challenge MUST be requested.  This is to deter someone from requesting
+a challenge and trying to brute-force a correct response.
+
+To create a public/private key pair:
+
+    openssl genrsa -out private.pem <size>
+    oepnssl rsa -in private.pem -out public.pem -pubout
+
+where <size> is the number of bits you want your key to be.

@@ -1,0 +1,7 @@
+Makefile
+*.o
+*.so
+.*.swp
+*~
+private_key.pem
+mkmf.log
