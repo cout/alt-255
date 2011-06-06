@@ -86,6 +86,8 @@ class IRC_Bot < IRC
     loop do
       begin
         super()
+      rescue Interrupt
+        raise Interrupt
       rescue Exception => detail
         puts "Main thread got an exception"
         puts detail.message
@@ -177,9 +179,6 @@ class IRC_Bot < IRC
     @commands[name.upcase] = command
   end
 
-
-  protected
-
   # -----------------------------------------------------------------------
   # Events
   # -----------------------------------------------------------------------
@@ -193,7 +192,6 @@ class IRC_Bot < IRC
         privmsg(bot, "CHALLENGE OP #{channel}")
       end
     end
-    return false
   end
 
   def badnick_event(message)
@@ -204,26 +202,25 @@ class IRC_Bot < IRC
 
   def ping_event(message)
     log "[ Server ping ]"
-    return super(message)
+    super(message)
   end
 
   def ctcp_ping_event(message)
     log "[ CTCP PING #{message.args} from #{message.source} ]"
-    return super(message)
+    super(message)
   end
 
   def ctcp_version_event(message)
     log "[ CTCP VERSION from #{message.source} ]"
-    return super(message)
+    super(message)
   end
 
   def unknown_ctcp_event(message)
     log "[ unknown CTCP #{message.msg} from #{message.source} ]"
-    return true
   end
 
   def privmsg_event(message)
-    return false if !message.source.nick
+    return if !message.source.nick
 
     if @nicks[@current_nick].upcase == message.dest.upcase then
       reply_to = message.source.nick
