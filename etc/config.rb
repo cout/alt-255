@@ -5,9 +5,9 @@ class CONFIG
     # SERVER          = 'irc.efnet.org'
     SERVER          = 'irc.efnet.nl'
     PORT            = 6667
-    NICKS           = [ 'Alt-255', 'Alt-255_' ]
-    USER            = 'Alt-255'
-    REAL_NAME       = 'Alt-255'
+    NICKS           = [ 'alt255', 'alt255_' ]
+    USER            = 'alt255'
+    REAL_NAME       = 'Alt255'
     # CHANNELS        = [ '#c', '#code-poets' ]
     CHANNELS        = [ '#alt-255' ]
     # BOTLIST         = [ 'Alt-255', 'cout' ]

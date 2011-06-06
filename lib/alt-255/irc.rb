@@ -16,17 +16,15 @@ public
         @server = server
         @port = port
 
-        @callbacks = Hash.new
-        @ctcp_callbacks = Hash.new
-
-        @callbacks['PING'] = [ ]
-        @callbacks['PONG'] = [ ]
+        @callbacks = Hash.new { |h,k| h[k] = [ ] }
+        @ctcp_callbacks = Hash.new { |h,k| h[k] = [ ] }
 
         @ping_interval = ping_interval
         @ping_timeout = ping_timeout
 
+        register 'PING', method(:ping_event)
         register_ctcp 'PING', method(:ctcp_ping_event)
-        register_ctcp 'VERISON', method(:ctcp_version_event)
+        register_ctcp 'VERSION', method(:ctcp_version_event)
     end
 
     attr_reader :server, :port
@@ -61,8 +59,10 @@ public
     # string (for string server messages) or a number (for numeric
     # server messages).
     def register_ctcp(msg, callback)
+      p @ctcp_callbacks
       @ctcp_callbacks[msg.to_s.upcase] ||= [ ]
       @ctcp_callbacks[msg.to_s.upcase] << callback
+      p @ctcp_callbacks
     end
 
     # Set the default callback for unhandled messages (server messages for
@@ -217,11 +217,13 @@ protected
         case s
             when /^PING :(.+)$/i
                 # Respond to a server ping
-                message = Message.new($1, nil, 'PING', [ ])
+                source = Source.new($1)
+                message = Message.new(source, nil, 'PING', [ ])
                 @callbacks['PING'].each { |cb| cb.call(message) }
 
             when /:(.+?) PONG (.+?) :(.+)/
-                message = Message.new($1, nil, 'PONG', [ ])
+                source = Source.new($1)
+                message = Message.new(source, nil, 'PONG', [ ])
                 @callbacks['PONG'].each { |cb| cb.call(message) }
 
             when /^:(.+?)\s+PRIVMSG\s+(.+?)\s+:?[\001](.+?)(\s+.+)?[\001]$/i
@@ -229,8 +231,10 @@ protected
                 source = Source.new($1)
                 dest = $2
                 msg = $3.upcase
-                arg = $4 ? nil : $4.strip
+                arg = $4 ? $4.strip : nil
                 message = Message.new(source, dest, msg, [ arg ])
+                p @ctcp_callbacks
+                p @ctcp_callbacks[msg]
                 @ctcp_callbacks[msg].each { |cb| cb.call(message) }
 
             when /^:(.+?)\s+(.+?)\s+(.*)/
@@ -245,20 +249,18 @@ protected
     end
 
     # Handle a server PING
-    def ping_event(source, msg, args)
-        send "PONG :#{source}"
+    def ping_event(message)
+        send "PONG :#{message.source}"
     end
 
     # Handle a CTCP PING
-    def ctcp_ping_event(source, dest, msg, arg)
-      source = Source.new(source)
-      reply_ping(nick, arg) unless !source.nick
+    def ctcp_ping_event(message)
+      reply_ping(message.source.nick, message.args[0]) unless !message.source.nick
     end
 
     # Handle a CTCP VERSION
-    def ctcp_version_event(source, dest, msg, arg)
-      source = Source.new(source)
-      reply_version(nick, @version_string) unless !source.nick
+    def ctcp_version_event(message)
+      reply_version(message.source.nick, @version_string) unless !message.source.nick
     end
 
     # Parse a string of arguments of the form "arg1 arg2 :argument 3" and

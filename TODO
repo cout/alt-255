@@ -2,4 +2,4 @@ Bugs:
 - If we can't get any of our nicks, then we loop infinitely
 - Shouldn't try to send PING until we have successfully connected
 - Sending wrong info in USER line
-
+- Ctrl-C twice to exit

@@ -74,9 +74,6 @@ public
         register ERR_ERRONEUSNICKNAME, method(:badnick_event)
         register ERR_NICKNAMEINUSE, method(:badnick_event)
         register 'PRIVMSG', method(:privmsg_event)
-        register 'PING', method(:ping_event)
-        register_ctcp 'PING', method(:ctcp_ping_event)
-        register_ctcp 'VERSION', method(:ctcp_version_event)
         register_default_ctcp method(:unknown_ctcp_event)
 
         # Now add a number of commands to be processed when we receive them.
@@ -193,7 +190,7 @@ protected
     # Events
     # -----------------------------------------------------------------------
     
-    def welcome_event(source, msg, args)
+    def welcome_event(message)
         log_message "welcome event"
         # Join a channel and request ops
         @channels.each do |channel|
@@ -205,29 +202,29 @@ protected
         return false
     end
 
-    def badnick_event(source, msg, args)
-        log_message "[ Received #{msg}; rotating nicks ]"
+    def badnick_event(message)
+        log_message "[ Bad nick; rotating nicks ]"
         @current_nick = (@current_nick + 1) % @nicks.length
         nick(@nicks[@current_nick])
     end
 
-    def ping_event(source, msg, args)
+    def ping_event(message)
         log_message "[ Server ping ]"
-        return super(source, msg, args)
+        return super(message)
     end
 
-    def ctcp_ping_event(source, dest, msg, arg)
-        log_message "[ CTCP PING #{arg} from #{source} ]"
-        return super(source, dest, msg, arg)
+    def ctcp_ping_event(message)
+        log_message "[ CTCP PING #{message.args} from #{message.source} ]"
+        return super(message)
     end
 
-    def ctcp_version_event(source, dest, msg, arg)
-        log_message "[ CTCP VERSION from #{source} ]"
-        return super(source, dest, msg, arg)
+    def ctcp_version_event(message)
+        log_message "[ CTCP VERSION from #{message.source} ]"
+        return super(message)
     end
 
-    def unknown_ctcp_event(source, dest, msg, arg)
-        log_message "[ unknown CTCP #{msg} from #{source} ]"
+    def unknown_ctcp_event(message)
+        log_message "[ unknown CTCP #{message.msg} from #{message.source} ]"
         return true
     end
 
