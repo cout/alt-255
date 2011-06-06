@@ -3,6 +3,7 @@ class CommandArgs
   attr_reader :message
   attr_reader :user
   attr_reader :dest
+  attr_reader :str
   attr_reader :args
 
   def initialize(bot, message, reply_to, str)

@@ -83,11 +83,16 @@ class IRC_Bot < IRC
     login(@user, @nicks[@current_nick], @real_name)
     log "Complete.  Entering main loop."
 
-    # TODO: If we get an exception, we don't want to exit
-    catch :done do
-      super()
-      throw :done
+    loop do
+      begin
+        super()
+      rescue Exception => detail
+        puts "Main thread got an exception"
+        puts detail.message
+        puts detail.backtrace.join("\n")
+      end
     end
+
     outgoing_thread.kill
   end
 
@@ -98,19 +103,19 @@ class IRC_Bot < IRC
 
   def run_outgoing_thread
     thread = Thread.new do
-      begin
-        loop do
+      loop do
+        begin
           s = @outgoing_queue.shift
           log "--> #{s}"
           send_impl(s)
           sleep @outgoing_delay
-        end
-      rescue Interrupt
-        raise Interrupt
-      rescue Exception => detail
-        puts "Outgoing thread got an exception"
-        puts detail.message
-        puts detail.backtrace.join("\n")
+        rescue Interrupt
+          raise Interrupt
+        rescue Exception => detail
+          puts "Outgoing thread got an exception"
+          puts detail.message
+          puts detail.backtrace.join("\n")
+      end
       end
     end
   end
