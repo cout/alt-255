@@ -4,7 +4,7 @@ class Source
   attr_reader :host
 
   def initialize(str)
-    if /(.+?)!(.+?)@(.+)/ =~ source then
+    if /(.+?)!(.+?)@(.+)/ =~ str then
         @nick, @user, @host = $1, $2, $3
     else
         @nick, @user, @host = nil, nil, str
