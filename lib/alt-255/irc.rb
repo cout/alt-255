@@ -233,8 +233,6 @@ protected
                 msg = $3.upcase
                 arg = $4 ? $4.strip : nil
                 message = Message.new(source, dest, msg, [ arg ])
-                p @ctcp_callbacks
-                p @ctcp_callbacks[msg]
                 @ctcp_callbacks[msg].each { |cb| cb.call(message) }
 
             when /^:(.+?)\s+(.+?)\s+(.*)/
@@ -242,7 +240,7 @@ protected
                 source = Source.new($1)
                 msg = $2.upcase
                 args = parse_args($3)
-                dest = args.shift
+                dest = args[0]
                 message = Message.new(source, dest, msg, args)
                 @callbacks[msg].each { |cb| cb.call(message) }
         end

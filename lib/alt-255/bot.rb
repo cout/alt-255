@@ -251,13 +251,13 @@ protected
 
             if cmd.num_args == -1 then
                 # If the number of args is -1, then pass it as a string
-                log_command(cmd, args[1], message.source, to)
+                log_command(cmd, message.args[1], message.source, dest)
                 cmd.cb.call(message.source, dest, command, command_args)
                 return true
             elsif cmd.num_args == -2
                 # If the number of args is -2, then pass it as an array
                 arr = command_args ? command_args.split(/\s+/) : []
-                log_command(cmd, args[1], user, to)
+                log_command(cmd, message.args[1], user, dest)
                 cmd.cb.call(message.source, dest, command, *arr)
                 return true
             else
@@ -268,7 +268,7 @@ protected
                     # offer help
                     send_help(dest, command)
                 else
-                    log_command(cmd, args[1], user, to)
+                    log_command(cmd, message.args[1], user, dest)
                     cmd.cb.call(message.source, dest, command, *arr)
                     return true
                 end
