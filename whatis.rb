@@ -1,4 +1,5 @@
-WHATIS_DB = '/usr/share/man/whatis'
+# WHATIS_DB = '/usr/share/man/whatis'
+WHATIS_DB = '/dev/null'
 WHATIS_CACHE = Hash.new
 
 File.open(WHATIS_DB) do |db|
