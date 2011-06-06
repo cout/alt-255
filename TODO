@@ -1,0 +1,2 @@
+Bugs:
+- If we can't get any of our nicks, then we loop infinitely
