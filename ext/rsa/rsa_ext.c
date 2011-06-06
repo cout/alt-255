@@ -138,7 +138,7 @@ VALUE ruby_RSA_decrypt(
 }
 
 // Initialize the Ruby RSA module.
-void Init_rsa() {
+void Init_rsa_ext() {
     VALUE cRSA = rb_define_class("RSA", rb_cObject);
 
     rb_define_singleton_method(cRSA, "encrypt", ruby_RSA_encrypt, 3);

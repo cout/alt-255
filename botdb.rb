@@ -1,5 +1,5 @@
 require 'pstore'
-require './rsa.so'
+require 'rsa/rsa_ext'
 
 #
 # A bot database that keeps track of bots and allows them to authenticate
