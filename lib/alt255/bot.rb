@@ -1,8 +1,9 @@
+require 'alt255/irc'
+require 'alt255/userdb'
+require 'alt255/botdb'
+require 'alt255/calcdb'
+
 require 'thread'
-require './irc.rb'
-require './userdb.rb'
-require './botdb.rb'
-require './calcdb.rb'
 
 # Don't allow use of "tainted" data by potentially dangerous operations
 # We'd go up to safe level 2, but then the user database doesn't work, since
