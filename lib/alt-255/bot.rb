@@ -156,30 +156,6 @@ class IRC_Bot < IRC
     super(channel)
   end
 
-  # Add a new command for processing; the specified method is called
-  # whenever a privmsg is received that begins with "name"; i.e. a
-  # method for a command called "OP" will be called whenever a message
-  # "OP mypassword #channel" is received.  The flags argument specifies
-  # flags for a command; this includes whether the command is public or
-  # private (private commands are only responded to when sent as a
-  # privmsg), and whether the command is loggable (non-loggable commands
-  # only get the command logged, not the arguments, so specify non-
-  # loggable for commands where passwords are sent).  A method should
-  # expect the following parameters: 
-  #   source - the Source the command came from
-  #   dest   - the destination for the response (the channel name if the
-  #            message was sent to a channel, or the user's nick if the
-  #            message was sent directly to our nick
-  #   cmd    - the full string of the command
-  #   args   - any number of arguments, as specified by num_args.  Special
-  #            value for num_args are -1 (send the arguments as one long
-  #            string), and -2 (split the arguments by whitespace and
-  #            pass the arguments as an array)
-  def add_command(name, help, flags, method, num_args)
-    command = Command.new(name.upcase, help, flags, method, num_args)
-    @commands[name.upcase] = command
-  end
-
   # -----------------------------------------------------------------------
   # Events
   # -----------------------------------------------------------------------
