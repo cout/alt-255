@@ -14,10 +14,11 @@ class CONFIG
     BOTLIST         = []
     PRIVATE_KEY     = File.readlines(File.join(File.dirname(__FILE__), 'private_key.pem'))
     USER_DB         = File.join(File.dirname(__FILE__), 'users.db')
-    BOT_DB         = File.join(File.dirname(__FILE__), 'bots.db')
+    BOT_DB          = File.join(File.dirname(__FILE__), 'bots.db')
     CALC_DB         = File.join(File.dirname(__FILE__), 'calcdb.data')
     TIMESTAMP       = true
     RECONNECT_DELAY = 300
     PING_INTERVAL   = 300
     PING_TIMEOUT    = 600
+    DELAY           = 0.1
 end

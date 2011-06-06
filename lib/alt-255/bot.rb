@@ -58,7 +58,7 @@ class IRC_Bot < IRC
     end
 
     @outgoing_queue = Queue.new
-    @outgoing_delay = 0.1 # TODO: make this configurable
+    @outgoing_delay = config::DELAY
 
     # Register for all the events we will want to receive
     register RPL_WELCOME, method(:welcome_event)
