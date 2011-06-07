@@ -110,6 +110,16 @@ class IRC
     sendmsg "TOPIC #{channel} :#{str}"
   end
 
+  # Respond to a ping request
+  def reply_ping(user, str)
+    send "NOTICE #{user} :\001PING #{str}\001"
+  end
+
+  # Respond to a version request
+  def reply_version(user, version)
+    send "NOTICE #{user} :\001#{version}\001"
+  end
+
   # Quit with a message
   def quit(message="")
     sendmsg "QUIT :#{message}"
