@@ -25,17 +25,13 @@ class Ping < Plugin
   end
 
   def ping_event(message)
-    bot.log "[ Server ping ]"
-    bot.sendmsg "PONG :#{message.source}"
+    @bot.log "[ Server ping ]"
+    @bot.sendmsg "PONG :#{message.source}"
   end
 
   def ctcp_ping_event(message)
-    bot.log "[ CTCP PING #{message.args} from #{message.source} ]"
-    bot.reply_ping(message.source.nick, message.args[0]) unless !message.source.nick
-  end
-
-  def reply_ping(user, str)
-    bot.sendmsg "NOTICE #{user} :\001PING #{str}\001"
+    @bot.log "[ CTCP PING #{message.args} from #{message.source} ]"
+    @bot.reply_ping(message.source.nick, message.args[0]) unless !message.source.nick
   end
 end
 

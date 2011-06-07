@@ -29,6 +29,8 @@ class Commands < Plugin
       public_message = false
     end
 
+    p reply_to
+
     command, command_args = message.args[1].split(/\s+/, 2)
     cmd = @commands[command.upcase]
 

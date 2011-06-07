@@ -9,7 +9,7 @@ class ChallengeCommand
   end
 
   def do(command)
-    user = command.user
+    user = command.message.source.user
     botname = "#{user.user}@#{user.host}"
     botname.untaint
 

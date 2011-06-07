@@ -14,6 +14,7 @@ class YourChallengeCommand < Command
       return
     end
 
+    user = command.message.source.user
     challenge = command.args[0]
     msg = command.args[1]
     msg_arg = command.args[2]

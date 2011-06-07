@@ -16,7 +16,7 @@ class ChallengeOpCommand < Command
       return
     end
 
-    user = command.user
+    user = command.message.source.user
     response = command.args[0]
     channel = command.args[1]
 

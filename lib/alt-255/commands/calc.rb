@@ -23,6 +23,7 @@ class CalcCommand < Command
       end
     when /(\S+)/
       calc = $1
+      dest = command.reply_to
     else
       command.send_help()
       return
