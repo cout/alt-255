@@ -17,18 +17,20 @@ class Commands < Plugin
   end
 
   def privmsg_event(message)
+    p message
+
     return if !message.source.nick
 
-    if @nick.upcase == message.dest.upcase then
-      reply_to = message.source.nick
-      public_message = false
-    else
+    if message.dest[0] == ?# then
       reply_to = message.dest
       public_message = true
+    else
+      reply_to = message.source.nick
+      public_message = false
     end
 
     command, command_args = message.args[1].split(/\s+/, 2)
-    cmd = @bot.commands[command.upcase]
+    cmd = @commands[command.upcase]
 
     if cmd then
       # If this is a private-only command, then make sure it was sent to
