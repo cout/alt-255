@@ -1,5 +1,7 @@
 class Console < Plugin
   def initialize(bot)
+    @bot = bot
+
     @stdin_thread = Thread.new do
       Thread.current.abort_on_exception = true
       puts "starting stdin thread"
@@ -24,7 +26,7 @@ class Console < Plugin
         puts "Invalid command: #{cmd}"
       end 
     else
-      send(s)
+      @bot.send(s)
     end
   end
 end

@@ -22,7 +22,7 @@ class OpCommand < Command
     pass.untaint
 
     if @userdb.validate_user(username, pass) then
-      command.send "MODE #{channel} +o :#{user.nick}"
+      command.bot.sendmsg "MODE #{channel} +o :#{user.nick}"
     else
       command.log "[ Invalid user or pass ]"
     end

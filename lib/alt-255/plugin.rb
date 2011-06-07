@@ -1,15 +1,15 @@
 class Plugin
-  def self.load(filename)
-    str = File.read(plugin)
+  def self.load(bot, filename)
+    str = File.read(filename)
     m = Module.new
-    m.module_eval(str, plugin)
+    m.module_eval(str.untaint, filename)
 
     plugins = [ ]
 
     m.constants.each do |const|
-      c = const.const_get(m)
-      if c.is_a?(Plugin) then
-        @plugins << c.new(self)
+      c = m.const_get(const)
+      if c < Plugin then
+        plugins << c.new(bot)
       end
     end
 

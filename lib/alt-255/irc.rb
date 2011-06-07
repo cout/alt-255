@@ -66,8 +66,8 @@ class IRC
 
   # Log in to the IRC server
   def login(user, nick, real_name, flags=8)
-    send "USER #{user} #{flags} * :#{real_name}"
-    send "NICK #{nick}"
+    sendmsg "USER #{user} #{flags} * :#{real_name}"
+    sendmsg "NICK #{nick}"
   end
 
   # Just keep on truckin' until we disconnect
@@ -82,38 +82,37 @@ class IRC
   # Change the current nick
   def nick(nick)
     @nick = nick
-    send("NICK #{nick}")
+    sendmsg("NICK #{nick}")
   end
 
   # Send a message to the irc server and print it to the screen
-  def send_impl(s)
+  def sendmsg(s)
     @sock.send "#{s}\n", 0 
   end
-  alias_method :send, :send_impl
 
   # Send a message to a user or a channel
   def privmsg(destination, s)
-    send "PRIVMSG #{destination} :#{s}"
+    sendmsg "PRIVMSG #{destination} :#{s}"
   end
 
   # Join a channel
   def join(channel)
-    send "JOIN #{channel}"
+    sendmsg "JOIN #{channel}"
   end
 
   # Leave a channel
   def part(channel)
-    send "PART #{channel}"
+    sendmsg "PART #{channel}"
   end
 
   # Change the topic on a channel
   def topic(channel, str)
-    send "TOPIC #{channel} :#{str}"
+    sendmsg "TOPIC #{channel} :#{str}"
   end
 
   # Quit with a message
   def quit(message="")
-    send "QUIT :#{message}"
+    sendmsg "QUIT :#{message}"
   end
 
   # Given a line of input, process it.

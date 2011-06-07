@@ -12,7 +12,7 @@ class Commands < Plugin
     # TODO: register new commands at run-time as well
     @commands = { }
     Command.commands.each do |klass|
-      @commands[klass::NAME.upcase] = klass.new(self)
+      @commands[klass::NAME.upcase] = klass.new(@bot)
     end
   end
 

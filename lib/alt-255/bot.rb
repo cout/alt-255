@@ -3,6 +3,7 @@ require 'alt-255/userdb'
 require 'alt-255/botdb'
 require 'alt-255/calcdb'
 require 'alt-255/delayed_output'
+require 'alt-255/plugin'
 
 require 'thread'
 
@@ -24,6 +25,8 @@ class IRC_Bot < IRC
     super(
         config::SERVER,
         config::PORT)
+
+    @config = config
 
     @user = config::USER
     @real_name = config::REAL_NAME
@@ -52,8 +55,9 @@ class IRC_Bot < IRC
   end
 
   def load_plugins(plugin_dir)
-    Dir["#{plugin_dir}*.rb"].each do |plugin|
-      @plugins.concat(Plugin.load(plugin))
+    Dir["#{plugin_dir}/*.rb"].each do |plugin|
+      log "Loading plugin #{plugin}"
+      @plugins.concat(Plugin.load(self, plugin.untaint))
     end
   end
 
@@ -92,8 +96,8 @@ class IRC_Bot < IRC
     super
   end
 
-  # Override send() so we can print outgoing messages
-  def send(s)
+  # Override sendmsg() so we can print outgoing messages
+  def sendmsg(s)
     @delayed_output.push(s)
   end
 
