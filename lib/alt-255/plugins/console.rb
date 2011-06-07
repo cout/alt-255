@@ -31,8 +31,12 @@ class Console < Plugin
     when /eval/i
       eval(args)
     when /reload/i
-      $".delete(args)
-      require(args)
+      # TODO: This won't work for plugins since they are loaded into an
+      # anonymous module...
+      file = "alt-255/#{args}"
+      puts "Reloading #{file}"
+      $".delete(file)
+      require(file)
     else
       puts "Invalid command: #{cmd}"
     end

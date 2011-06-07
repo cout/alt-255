@@ -8,7 +8,7 @@ class ChallengeOp < Plugin
     @bot.log "welcome event"
     # TODO: wait until we have joined the channel to send the message
     @bot.config::CHANNELS.each do |channel|
-      @botlist.each do |bot|
+      @bot.config::BOTLIST.each do |bot|
         @bot.privmsg(bot, "CHALLENGE OP #{channel}")
       end
     end

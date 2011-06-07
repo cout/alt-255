@@ -17,8 +17,6 @@ class Commands < Plugin
   end
 
   def privmsg_event(message)
-    p message
-
     return if !message.source.nick
 
     if message.dest[0] == ?# then
@@ -29,9 +27,23 @@ class Commands < Plugin
       public_message = false
     end
 
-    p reply_to
+    msg = message.args[1]
 
-    command, command_args = message.args[1].split(/\s+/, 2)
+    regex = /^#{@bot.config::COMMAND_PREFIX}\s*(.*)/
+    p public_message, msg, regex, msg =~ regex
+
+    if public_message then
+      if msg =~ /^#{@bot.config::COMMAND_PREFIX}\s*(.*)/ then
+        msg = $1
+        puts "yes!"
+        p msg
+      else
+        # not for me
+        return
+      end
+    end
+
+    command, command_args = msg.split(/\s+/, 2)
     cmd = @commands[command.upcase]
 
     if cmd then
@@ -55,5 +67,4 @@ class Commands < Plugin
       "#{user.nick}!#{user.user}@#{user.host} to #{to} ]"
     end
   end
-
 end

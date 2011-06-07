@@ -40,11 +40,6 @@ class IRC_Bot < IRC
     @botdb = BotDB.new(config::BOT_DB)
     @calcdb = CalcDB.new(config::CALC_DB)
 
-    # And save the list of bots to authenticate to and our private key (so
-    # we can get opped automatically)
-    @botlist = config::BOTLIST
-    @private_key = config::PRIVATE_KEY
-
     @delayed_output = DelayedOutput.new(self, config::DELAY)
 
     @plugins = [ ]

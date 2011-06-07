@@ -5,7 +5,9 @@ class YourChallengeCommand < Command
   LOGGABLE = true
 
   def initialize(bot)
-    @botdb = bot.botdb
+    @bot = bot
+    @botdb = @bot.botdb
+    @private_key = @bot.config::PRIVATE_KEY
   end
 
   def do(command)
