@@ -10,6 +10,7 @@ class IRC
   include RFC2812
 
   attr_reader :mutex
+  attr_reader :sock
 
   def initialize(server, port)
     @mutex = Mutex.new

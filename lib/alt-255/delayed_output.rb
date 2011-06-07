@@ -1,7 +1,12 @@
 class DelayedOutput
-  def initialize(delay)
+  def initialize(bot, delay)
     @outgoing_queue = Queue.new
     @delay = delay
+    @bot = bot
+  end
+
+  def push(s)
+    @outgoing_queue.push(s)
   end
 
   def run
@@ -9,8 +14,8 @@ class DelayedOutput
       loop do
         begin
           s = @outgoing_queue.shift
-          log "--> #{s}"
-          send_impl(s)
+          @bot.log "--> #{s}"
+          @bot.sock.send "#{s}\n", 0 
           sleep @delay
         rescue Interrupt
           raise Interrupt

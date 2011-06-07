@@ -23,9 +23,7 @@ class IRC_Bot < IRC
   def initialize(config)
     super(
         config::SERVER,
-        config::PORT,
-        config::PING_INTERVAL,
-        config::PING_TIMEOUT)
+        config::PORT)
 
     @user = config::USER
     @real_name = config::REAL_NAME
@@ -44,7 +42,7 @@ class IRC_Bot < IRC
     @botlist = config::BOTLIST
     @private_key = config::PRIVATE_KEY
 
-    @delayed_output = DelayedOutput.new
+    @delayed_output = DelayedOutput.new(self, config::DELAY)
 
     @plugins = [ ]
 
@@ -96,7 +94,7 @@ class IRC_Bot < IRC
 
   # Override send() so we can print outgoing messages
   def send(s)
-    @outgoing_queue.push(s)
+    @delayed_output.push(s)
   end
 
   def handle_server_input(s)
