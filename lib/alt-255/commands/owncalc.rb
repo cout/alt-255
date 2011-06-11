@@ -4,6 +4,10 @@ class OwncalcCommand < Command
   PUBLIC = true
   LOGGABLE = true
 
+  def initialize(bot)
+    @calcdb = bot.calcdb
+  end
+
   def do(command)
     owner = @calcdb.owncalc(calc)
     if owner then

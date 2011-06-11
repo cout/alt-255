@@ -4,6 +4,10 @@ class SearchCommand < Command
   PUBLIC = true
   LOGGABLE = true
 
+  def initialize(bot)
+    @calcdb = bot.calcdb
+  end
+
   def do(command)
     pattern = command.str
 
