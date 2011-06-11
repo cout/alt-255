@@ -1,6 +1,7 @@
 require 'alt-255/rfc2812'
 require 'alt-255/message'
 require 'alt-255/source'
+require 'alt-255/callbacks'
 
 require 'socket'
 
@@ -18,8 +19,8 @@ class IRC
     @server = server
     @port = port
 
-    @callbacks = Hash.new { |h,k| h[k] = [ ] }
-    @ctcp_callbacks = Hash.new { |h,k| h[k] = [ ] }
+    @callbacks = Callbacks.new
+    @ctcp_callbacks = Callbacks.new
 
     @nick = nil
   end
@@ -33,30 +34,26 @@ class IRC
     key = msg.kind_of?(Numeric) \
     ? ("%03d" % msg)          \
     : msg.to_s.upcase
-    @callbacks[key] ||= [ ]
-    @callbacks[key] << callback
+    @callbacks.add(key, callback)
   end
 
   # Set the default callback for unhandled messages (server messages for
   # which there is no registered callback).
   def register_default(callback)
-    @callbacks.default ||= [ ]
-    @callbacks.default << callback
+    @callbacks.add_default(callback)
   end
 
   # Register for a server message.  The msg argument can be either a
   # string (for string server messages) or a number (for numeric
   # server messages).
   def register_ctcp(msg, callback)
-    @ctcp_callbacks[msg.to_s.upcase] ||= [ ]
-    @ctcp_callbacks[msg.to_s.upcase] << callback
+    @ctcp_callbacks.add(msg.to_s.upcase, callback)
   end
 
   # Set the default callback for unhandled messages (server messages for
   # which there is no registered callback).
   def register_default_ctcp(callback)
-    @ctcp_callbacks.default ||= [ ]
-    @ctcp_callbacks.default << callback
+    @ctcp_callbacks.add_default(callback)
   end
 
   # Connect to the IRC server
@@ -137,7 +134,7 @@ class IRC
       # Respond to a server ping
       source = Source.new($1)
       message = Message.new(source, nil, 'PING', [ ])
-      @callbacks['PING'].each { |cb| cb.call(message) }
+      @callbacks.call('PING', message)
 
     when /^:(.+?)\s+PRIVMSG\s+(.+?)\s+:?[\001](.+?)(\s+.+)?[\001]$/i
       # CTCP message
@@ -146,7 +143,7 @@ class IRC
       msg = $3.upcase
       arg = $4 ? $4.strip : nil
       message = Message.new(source, dest, msg, [ arg ])
-      @ctcp_callbacks[msg].each { |cb| cb.call(message) }
+      @ctcp_callbacks.call(msg, message)
 
     when /^:(.+?)\s+(.+?)\s+(.*)/
       # Server message
@@ -155,7 +152,7 @@ class IRC
       args = parse_args($3)
       dest = args[0]
       message = Message.new(source, dest, msg, args)
-      @callbacks[msg].each { |cb| cb.call(message) }
+      @callbacks.call(msg, message)
     end
   end
 
