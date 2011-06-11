@@ -29,9 +29,6 @@ class Commands < Plugin
 
     msg = message.args[1]
 
-    regex = /^#{@bot.config::COMMAND_PREFIX}\s*(.*)/
-    p public_message, msg, regex, msg =~ regex
-
     if public_message then
       if msg =~ /^#{@bot.config::COMMAND_PREFIX}\s*(.*)/ then
         msg = $1

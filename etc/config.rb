@@ -8,8 +8,8 @@ class CONFIG
   NICKS           = [ 'alt255', 'alt255_' ]
   USER            = 'alt255'
   REAL_NAME       = 'Alt255'
-  # CHANNELS        = [ '#c', '#code-poets' ]
-  CHANNELS        = [ '#alt-255' ]
+  CHANNELS        = [ '#c', '#alt-255' ]
+  # CHANNELS        = [ '#alt-255' ]
   # BOTLIST         = [ 'Alt-255', 'cout' ]
   BOTLIST         = []
   PRIVATE_KEY     = File.readlines(File.join(File.dirname(__FILE__), 'private_key.pem'))

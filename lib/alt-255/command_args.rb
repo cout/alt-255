@@ -10,7 +10,7 @@ class CommandArgs
     @message = message
     @reply_to = reply_to
     @str = str
-    @args = str.split()
+    @args = str ? str.split() : [ ]
   end
 
   def reply(response)

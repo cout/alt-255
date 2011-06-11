@@ -1,7 +1,7 @@
 class HelpCommand < Command
   NAME = 'help'
   HELP = 'help [<command>]'
-  PUBLIC = false
+  PUBLIC = true
   LOGGABLE = true
 
   def do(command)
@@ -9,14 +9,15 @@ class HelpCommand < Command
     arg = command.args[0]
 
     if arg then
-      cmd = bot.commands[arg.upcase]
+      cmd = Command.commands[arg.upcase]
       if cmd then
         command.reply("Usage: #{cmd.help}")
       else
         command.reply("No such command")
       end
     else
-      command.reply(bot.commands.keys)
+      commands = Command.commands.map { |cmd| cmd::NAME }
+      command.reply(commands.join(' '))
     end
   end
 end
