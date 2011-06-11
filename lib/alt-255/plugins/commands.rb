@@ -35,8 +35,6 @@ class Commands < Plugin
     if public_message then
       if msg =~ /^#{@bot.config::COMMAND_PREFIX}\s*(.*)/ then
         msg = $1
-        puts "yes!"
-        p msg
       else
         # not for me
         return
@@ -49,7 +47,7 @@ class Commands < Plugin
     if cmd then
       # If this is a private-only command, then make sure it was sent to
       # us directly and not to a channel.
-      return if cmd.public? and not public_message
+      return if public_message and not cmd.public?
 
       args = CommandArgs.new(@bot, message, reply_to, command_args)
       cmd.do(args)
